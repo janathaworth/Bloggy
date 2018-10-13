@@ -88,8 +88,11 @@ public class BloggyCronServlet extends HttpServlet {
 	    	Date date = (Date) post.getProperty("date");
 			boolean isBeforeYesterday = new DateTime( date).isBefore( DateTime.now().minusDays(1) );
 			
-			String titleString = post.getProperty("title").equals(null) ? "No Title" : (String) post.getProperty("title");
-			String contentString = post.getProperty("content").equals(null) ? "No Content" : (String) post.getProperty("content");
+			String titleString = (String) post.getProperty("title");
+			if(titleString == null || titleString.length() == 0)	titleString = "No Title";
+			String contentString = (String) post.getProperty("content");
+			if(contentString == null || contentString.length() == 0)	titleString = "No Content";
+
 			
 			if(!isBeforeYesterday) {
 				emailPost += titleString + "\n" + contentString + "\n\n";
