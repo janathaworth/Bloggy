@@ -2,6 +2,8 @@ package bloggy;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
+
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -18,10 +20,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.joda.time.DateTime;
+
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 
 
@@ -48,7 +54,9 @@ public class BloggyCronServlet extends HttpServlet {
 			  msg.addRecipient(Message.RecipientType.TO,
 		                   new InternetAddress(emailAddress));
 			  msg.setSubject("The Most Exciting News Ever!");
-			  msg.setText("Bloggy Daily Digest");
+			  
+			  String contentText = getContent(req);
+			  if(!contentText.equals("")) msg.setText(contentText);
 			  Transport.send(msg);
 		  }
 		} catch (AddressException e) {
@@ -60,6 +68,44 @@ public class BloggyCronServlet extends HttpServlet {
 		}
 	
 	
+	}
+	
+	public String getContent(HttpServletRequest req) {
+		
+		String blogName = req.getParameter("blogName");
+		if (blogName == null) {
+	    	blogName = "default";
+		}
+	
+		Key postKey = KeyFactory.createKey("Blog", blogName);
+	    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+		Query query = new Query("Post", postKey).addSort("date", Query.SortDirection.DESCENDING);
+		List<Entity> posts = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
+		String emailPost ="";
+
+		for (Entity post : posts) {
+	    	Date date = (Date) post.getProperty("date");
+			boolean isBeforeYesterday = new DateTime( date).isBefore( DateTime.now().minusDays(1) );
+			if(!isBeforeYesterday) {
+				emailPost += post.getProperty("title") + "\n" + post.getProperty("content") + "\n\n";
+	    	}
+
+		}
+		return emailPost;
+//			pageContext.setAttribute("post_title", post.getProperty("title"));
+//			pageContext.setAttribute("post_content", post.getProperty("content"));
+//	    	pageContext.setAttribute("post_user", post.getProperty("user"));
+//	    	
+//	    	Date date = (Date)post.getProperty("date");
+//	      	SimpleDateFormat ft = new SimpleDateFormat ("MMM dd, YYYY");
+//	      	pageContext.setAttribute("post_date", ft.format(date));
+//	      	
+//	      	%>
+//	      	
+//	        <h3>${fn:escapeXml(post_title)}</h3>
+//	        <p class="subtext">${fn:escapeXml(post_user.nickname)} | ${fn:escapeXml(post_date)}</p>
+//	   		<pre>${fn:escapeXml(post_content)}</pre><hr>
 	}
 	
 	@Override
