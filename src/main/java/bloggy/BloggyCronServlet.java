@@ -87,25 +87,16 @@ public class BloggyCronServlet extends HttpServlet {
 		for (Entity post : posts) {
 	    	Date date = (Date) post.getProperty("date");
 			boolean isBeforeYesterday = new DateTime( date).isBefore( DateTime.now().minusDays(1) );
+			
+			String titleString = post.getProperty("title").equals(null) ? "No Title" : (String) post.getProperty("title");
+			String contentString = post.getProperty("content").equals(null) ? "No Content" : (String) post.getProperty("content");
+			
 			if(!isBeforeYesterday) {
-				emailPost += post.getProperty("title") + "\n" + post.getProperty("content") + "\n\n";
+				emailPost += titleString + "\n" + contentString + "\n\n";
 	    	}
 
 		}
 		return emailPost;
-//			pageContext.setAttribute("post_title", post.getProperty("title"));
-//			pageContext.setAttribute("post_content", post.getProperty("content"));
-//	    	pageContext.setAttribute("post_user", post.getProperty("user"));
-//	    	
-//	    	Date date = (Date)post.getProperty("date");
-//	      	SimpleDateFormat ft = new SimpleDateFormat ("MMM dd, YYYY");
-//	      	pageContext.setAttribute("post_date", ft.format(date));
-//	      	
-//	      	%>
-//	      	
-//	        <h3>${fn:escapeXml(post_title)}</h3>
-//	        <p class="subtext">${fn:escapeXml(post_user.nickname)} | ${fn:escapeXml(post_date)}</p>
-//	   		<pre>${fn:escapeXml(post_content)}</pre><hr>
 	}
 	
 	@Override
