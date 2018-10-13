@@ -35,10 +35,32 @@
 	
 	UserService userService = UserServiceFactory.getUserService();
     User user = userService.getCurrentUser();
+    
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    
     if (user != null) {
-      pageContext.setAttribute("user", user); %>
+      pageContext.setAttribute("user", user); 
+      Key postKey = KeyFactory.createKey("subscribeEmail", user.getEmail());
+	  Query query = new Query("Subscriber", postKey);
+	  List<Entity> posts = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
+      if(posts.size() != 0){ %>
+      	<form action="/email" method="post">
+      		<input type="submit" value="Unsubscribe" class="btn btn-dark btn-sm">
+      		<input type="hidden" name="blogName" value="${fn:escapeXml(blogName)}">
+      		<input type="hidden" name="deleteEmail" value="true">
+      	</form>
+      <%}
+      else{%>
       
-   	<a href="#" class="btn btn-dark btn-sm">Subscribe</a>	
+	      <form action="/email" method="post">
+	   		<input type="submit" value="Subscribe" class="btn btn-dark btn-sm">
+	   		<input type="hidden" name="blogName" value="${fn:escapeXml(blogName)}">
+	   		<input type="hidden" name="deleteEmail" value="false">
+	   	  </form>
+	   	  
+     <% }%>
+   	
+   	
 	<a href="<%= userService.createLogoutURL(request.getRequestURI()) %>" class="btn btn-dark btn-sm">
 		Sign Out
 	</a> 
@@ -52,7 +74,7 @@
 
 <% 	}
 
-	DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	
 	Key postKey = KeyFactory.createKey("Blog", blogName);
 
 	Query query = new Query("Post", postKey).addSort("date", Query.SortDirection.DESCENDING);
