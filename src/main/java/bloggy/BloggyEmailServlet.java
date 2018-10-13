@@ -24,15 +24,15 @@ public class BloggyEmailServlet extends HttpServlet {
 
 	    String blogName = req.getParameter("blogName");
 	    String emailAddress = user.getEmail();
+		    
+	    String unsubscriber = req.getParameter("delete");
 	    
-	    Key postKey = KeyFactory.createKey("subscribeEmail", emailAddress);
-	    
-	    String unsubscriber = req.getParameter("deleteEmail");
 	    if(unsubscriber.equals("true")) {
+	    	Key postKey = KeyFactory.createKey("subscribeEmail", emailAddress);
 	    	datastore.delete(postKey);
 	    }
 	    else {
-		    Entity subscriber = new Entity("Subscriber", postKey);
+		    Entity subscriber = new Entity("subscribeEmail", emailAddress);
 		    subscriber.setProperty("emailAddress", user.getEmail());
 		    datastore.put(subscriber);
 	    }

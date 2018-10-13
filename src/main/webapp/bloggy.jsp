@@ -7,6 +7,8 @@
 <%@ page import="com.google.appengine.api.datastore.DatastoreService" %>
 <%@ page import="com.google.appengine.api.datastore.Query" %>
 <%@ page import="com.google.appengine.api.datastore.Entity" %>
+<%@ page import="com.google.appengine.api.datastore.EntityNotFoundException" %>
+
 <%@ page import="com.google.appengine.api.datastore.FetchOptions" %>
 <%@ page import="com.google.appengine.api.datastore.Key" %>
 <%@ page import="com.google.appengine.api.datastore.KeyFactory" %>
@@ -41,24 +43,27 @@
     if (user != null) {
       pageContext.setAttribute("user", user); 
       Key postKey = KeyFactory.createKey("subscribeEmail", user.getEmail());
-	  Query query = new Query("Subscriber", postKey);
-	  List<Entity> posts = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
-      if(posts.size() != 0){ %>
-      	<form action="/email" method="post">
-      		<input type="submit" value="Unsubscribe" class="btn btn-dark btn-sm">
-      		<input type="hidden" name="blogName" value="${fn:escapeXml(blogName)}">
-      		<input type="hidden" name="deleteEmail" value="true">
-      	</form>
-      <%}
-      else{%>
-      
+	  
+	  try {
+		  Entity subscriber = datastore.get(postKey); %>
+		  <form action="/email" method="post">
+    		<input type="submit" value="Unsubscribe" class="btn btn-dark btn-sm">
+    		<input type="hidden" name="blogName" value="${fn:escapeXml(blogName)}">
+    		<input type="hidden" name="delete" value="true">
+    		
+    	  </form>
+	<%}
+	  catch(EntityNotFoundException e) { %>
+	      
 	      <form action="/email" method="post">
 	   		<input type="submit" value="Subscribe" class="btn btn-dark btn-sm">
 	   		<input type="hidden" name="blogName" value="${fn:escapeXml(blogName)}">
-	   		<input type="hidden" name="deleteEmail" value="false">
+	   		<input type="hidden" name="delete" value="false">
+	   		
 	   	  </form>
 	   	  
-     <% }%>
+     	
+	<%}%>
    	
    	
 	<a href="<%= userService.createLogoutURL(request.getRequestURI()) %>" class="btn btn-dark btn-sm">
