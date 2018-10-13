@@ -2,6 +2,7 @@ package bloggy;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -17,6 +18,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Query;
+
 
 
 public class BloggyCronServlet extends HttpServlet {
@@ -30,13 +37,20 @@ public class BloggyCronServlet extends HttpServlet {
 	try {
 		 _logger.info("Cron Job has been executed");
 		 
-		  Message msg = new MimeMessage(session);
-		  msg.setFrom(new InternetAddress("bloggy.admin@example.com", "Bloggy Admin"));
-		  msg.addRecipient(Message.RecipientType.TO,
-		                   new InternetAddress("user@example.com", "Mr. User"));
-		  msg.setSubject("Your Example.com account has been activated");
-		  msg.setText("This is a test");
-		  Transport.send(msg);
+		  DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		  Query query = new Query("subscribeEmail");		  		 
+		  List<Entity> subscribers = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
+		  
+		  for(Entity sub : subscribers) {
+			  Message msg = new MimeMessage(session);
+			  msg.setFrom(new InternetAddress("admin@bloggy-219203.appspotmail.com", "Bloggy Admin"));
+			  String emailAddress = (String) sub.getProperty("emailAddress");
+			  msg.addRecipient(Message.RecipientType.TO,
+		                   new InternetAddress(emailAddress));
+			  msg.setSubject("The Most Exciting News Ever!");
+			  msg.setText("Bloggy Daily Digest");
+			  Transport.send(msg);
+		  }
 		} catch (AddressException e) {
 		  // ...
 		} catch (MessagingException e) {
