@@ -4,7 +4,7 @@
 <url>/cron/mycronjob</url>
 <description>Daily 5pm CST email digest to all subscribers 
 			 iff new posts in the last 24 hours. </description>
-<schedule>every 2 minutes</schedule>
+<schedule>everyday 17:00</schedule>
     <timezone>US/Central</timezone>
 </cron>
 
