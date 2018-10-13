@@ -27,12 +27,14 @@ public class BloggyPostServlet extends HttpServlet {
 
 	    String blogName = req.getParameter("blogName");
         Key postKey = KeyFactory.createKey("Blog", blogName);
-        String content = req.getParameter("content");
+        String title = req.getParameter("title"); 
+        String content = req.getParameter("content"); 
         Date date = new Date();
         Entity post = new Entity("Post", postKey);
 
         post.setProperty("user", user);
         post.setProperty("date", date);
+        post.setProperty("title", title);
         post.setProperty("content", content);
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();

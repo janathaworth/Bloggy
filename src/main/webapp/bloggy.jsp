@@ -15,17 +15,17 @@
 
 
 <html>
-<head></head>
+<head>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
 <body>
 
 	<div style="display:flex">
 		<h1>Bloggy</h1>
 		<img src="/maxresdefault.jpg" style="width:80px; height: 60px;">
 	</div>
-		
-	<button type="button">Subscribe</button>	
-<%	
-	String blogName = request.getParameter("blogName");
+	<a href="#" class="btn btn-dark">Subscribe</a>	
+	<%	String blogName = request.getParameter("blogName");
 	if (blogName == null) {
     	blogName = "default";
 	}
@@ -34,48 +34,41 @@
 	UserService userService = UserServiceFactory.getUserService();
     User user = userService.getCurrentUser();
     if (user != null) {
-      pageContext.setAttribute("user", user);
-%>
-	<a href="<%= userService.createLogoutURL(request.getRequestURI()) %>">
-		<button type="button">Sign Out</button>
+      pageContext.setAttribute("user", user); %>
+      
+	<a href="<%= userService.createLogoutURL(request.getRequestURI()) %>" class="btn btn-dark">
+		Sign Out
 	</a> 
 	<hr>
-	<a href="/post.jsp"><button type="button">Create Post</button></a>
-<%
-    } else {
-%>
-	<a href="<%= userService.createLoginURL(request.getRequestURI()) %>">	
-		<button type="button">Sign In</button>
+	<a href="/post.jsp" class="btn btn-dark">Create Post</a>
+
+<%	} else { %>
+
+	<a href="<%= userService.createLoginURL(request.getRequestURI()) %>" class="btn btn-dark">	
+		Sign In
 	</a> 
 	<hr>
-<% 
-    }
 
-DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-Key postKey = KeyFactory.createKey("Blog", blogName);
+<% 	}
 
-Query query = new Query("Post", postKey).addSort("date", Query.SortDirection.DESCENDING);
-List<Entity> posts = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(5));
+	DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	Key postKey = KeyFactory.createKey("Blog", blogName);
 
-for (Entity post : posts) {
-	pageContext.setAttribute("post_content", post.getProperty("content"));
+	Query query = new Query("Post", postKey).addSort("date", Query.SortDirection.DESCENDING);
+	List<Entity> posts = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(5));
 
-	if (post.getProperty("user") == null) {
-    %>
-    	<p>An anonymous person wrote:</p>
-   	<%
-    } else {
-
+	for (Entity post : posts) {
+		pageContext.setAttribute("post_title", post.getProperty("title"));
+		pageContext.setAttribute("post_content", post.getProperty("content"));
     	pageContext.setAttribute("post_user", post.getProperty("user"));
-        %>
-        <p><b>${fn:escapeXml(post_user.nickname)}</b> wrote:</p>
-     	<%
-    }
-    %>
-    <blockquote>${fn:escapeXml(post_content)}</blockquote>
-	<%
-}
-%>
+    	pageContext.setAttribute("post_date", post.getProperty("date")); %>
+
+        <h3>${fn:escapeXml(post_title)}</h3>
+        <p style="color:gray">${fn:escapeXml(post_user.nickname)}, ${fn:escapeXml(post_date)}</p>
+   		<blockquote>${fn:escapeXml(post_content)}</blockquote>
+   		<br>
+<% 	}   %>
+
 </body>
 
 </html>
