@@ -26,7 +26,7 @@
 <body>
 
 	<div style="display:flex; padding-bottom:1em;">
-		<h1>Blogg</h1>
+		<h1>Bloggy</h1>
 		<img src="/maxresdefault.jpg" style="width:80px; height: 60px;">
 	</div>
 	<%	String blogName = request.getParameter("blogName");
