@@ -4,14 +4,14 @@
 <url>/cron/mycronjob</url>
 <description>Daily 5pm CST email digest to all subscribers 
 			 iff new posts in the last 24 hours. </description>
-<schedule>every 5 minutes</schedule>
+<schedule>everyday 17:00</schedule>
     <timezone>US/Central</timezone>
 </cron>
 
 <cron>
     <url>/retry</url>
     <description>Retry on jsdk</description>
-    <schedule>every saturday 08:00</schedule>
+    <schedule>every 5 minutes</schedule>
     <retry-parameters>
       <min-backoff-seconds>2.5</min-backoff-seconds>
       <max-doublings>5</max-doublings>
