@@ -78,11 +78,9 @@
       	
       	%>
       	
-      	
-
         <h3>${fn:escapeXml(post_title)}</h3>
         <p class="subtext">${fn:escapeXml(post_user.nickname)} | ${fn:escapeXml(post_date)}</p>
-   		<blockquote>${fn:escapeXml(post_content)}</blockquote><hr>
+   		<pre>${fn:escapeXml(post_content)}</pre><hr>
 <% 	}  
 
 	if (all != null && all.equals("true")) { %>

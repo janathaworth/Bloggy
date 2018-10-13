@@ -5,3 +5,7 @@
 body {
 	margin-left: 1em;
 }
+
+pre {
+	font-family:inherit;
+}
