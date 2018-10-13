@@ -56,9 +56,18 @@
 	Key postKey = KeyFactory.createKey("Blog", blogName);
 
 	Query query = new Query("Post", postKey).addSort("date", Query.SortDirection.DESCENDING);
-	List<Entity> posts = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(5));
-
-	for (Entity post : posts) {
+	List<Entity> posts;
+	Entity post;
+	String all = request.getParameter("all");
+	if (all != null && all.equals("true")) {
+		posts = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
+	}
+	else {
+		posts = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(5));
+	}
+	
+	for (int i = 0; i < posts.size(); i++) {
+		post = posts.get(i);
 		pageContext.setAttribute("post_title", post.getProperty("title"));
 		pageContext.setAttribute("post_content", post.getProperty("content"));
     	pageContext.setAttribute("post_user", post.getProperty("user"));
@@ -74,7 +83,15 @@
         <h3>${fn:escapeXml(post_title)}</h3>
         <p class="subtext">${fn:escapeXml(post_user.nickname)} | ${fn:escapeXml(post_date)}</p>
    		<blockquote>${fn:escapeXml(post_content)}</blockquote><hr>
-<% 	}   %>
+<% 	}  
+
+	if (all != null && all.equals("true")) { %>
+		<a href="/bloggy.jsp?all=false" class="btn btn-dark btn-sm">See Less Posts</a>
+<%	}
+	
+	else { %>
+		<a href="/bloggy.jsp?all=true" class="btn btn-dark btn-sm">See All Posts</a>
+<%	} %>
 
 </body>
 
