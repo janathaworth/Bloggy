@@ -84,7 +84,6 @@
 
 	Query query = new Query("Post", postKey).addSort("date", Query.SortDirection.DESCENDING);
 	List<Entity> posts;
-	Entity post;
 	String all = request.getParameter("all");
 	if (all != null && all.equals("true")) {
 		posts = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
@@ -93,8 +92,7 @@
 		posts = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(5));
 	}
 	
-	for (int i = 0; i < posts.size(); i++) {
-		post = posts.get(i);
+	for (Entity post : posts) {
 		pageContext.setAttribute("post_title", post.getProperty("title"));
 		pageContext.setAttribute("post_content", post.getProperty("content"));
     	pageContext.setAttribute("post_user", post.getProperty("user"));
