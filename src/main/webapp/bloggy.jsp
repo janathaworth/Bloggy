@@ -17,14 +17,15 @@
 <html>
 <head>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<link rel="stylesheet" href="main.css">
 </head>
 <body>
 
-	<div style="display:flex">
+	<div style="display:flex; padding-bottom:1em;">
 		<h1>Bloggy</h1>
 		<img src="/maxresdefault.jpg" style="width:80px; height: 60px;">
 	</div>
-	<a href="#" class="btn btn-dark">Subscribe</a>	
+	<a href="#" class="btn btn-dark btn-sm">Subscribe</a>	
 	<%	String blogName = request.getParameter("blogName");
 	if (blogName == null) {
     	blogName = "default";
@@ -35,16 +36,16 @@
     User user = userService.getCurrentUser();
     if (user != null) {
       pageContext.setAttribute("user", user); %>
-      
-	<a href="<%= userService.createLogoutURL(request.getRequestURI()) %>" class="btn btn-dark">
+   
+	<a href="<%= userService.createLogoutURL(request.getRequestURI()) %>" class="btn btn-dark btn-sm">
 		Sign Out
 	</a> 
 	<hr>
-	<a href="/post.jsp" class="btn btn-dark">Create Post</a>
-
+	<a href="/post.jsp" class="btn btn-dark btn-sm">Create Post</a>
+	<br><br>
 <%	} else { %>
 
-	<a href="<%= userService.createLoginURL(request.getRequestURI()) %>" class="btn btn-dark">	
+	<a href="<%= userService.createLoginURL(request.getRequestURI()) %>" class="btn btn-dark btn-small">	
 		Sign In
 	</a> 
 	<hr>
@@ -64,7 +65,7 @@
     	pageContext.setAttribute("post_date", post.getProperty("date")); %>
 
         <h3>${fn:escapeXml(post_title)}</h3>
-        <p style="color:gray">${fn:escapeXml(post_user.nickname)}, ${fn:escapeXml(post_date)}</p>
+        <p class="subtext">${fn:escapeXml(post_user.nickname)}, ${fn:escapeXml(post_date)}</p>
    		<blockquote>${fn:escapeXml(post_content)}</blockquote>
    		<br>
 <% 	}   %>

@@ -17,8 +17,8 @@
    		<div><textarea name="content" rows="3" cols="60"></textarea></div>
    		<input type="hidden" name="blogName" value="${fn:escapeXml(blogName)}"/>
    		<div>
-   			<input type="submit" value="Post" class="btn btn-dark">
-   			<a href="/bloggy.jsp" class="btn btn-dark">Cancel</a>
+   			<input type="submit" value="Post" class="btn btn-dark btn-sm">
+   			<a href="/bloggy.jsp" class="btn btn-dark btn-sm">Cancel</a>
    		</div>
    		
  	</form>
