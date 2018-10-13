@@ -11,6 +11,8 @@
 <%@ page import="com.google.appengine.api.datastore.Key" %>
 <%@ page import="com.google.appengine.api.datastore.KeyFactory" %>
 <%@ page import="java.util.List" %>
+<%@ page import = "java.io.*,java.util.*" %>
+<%@ page import = "javax.servlet.*,java.text.*" %>
 
 
 
@@ -25,7 +27,6 @@
 		<h1>Bloggy</h1>
 		<img src="/maxresdefault.jpg" style="width:80px; height: 60px;">
 	</div>
-	<a href="#" class="btn btn-dark btn-sm">Subscribe</a>	
 	<%	String blogName = request.getParameter("blogName");
 	if (blogName == null) {
     	blogName = "default";
@@ -36,19 +37,18 @@
     User user = userService.getCurrentUser();
     if (user != null) {
       pageContext.setAttribute("user", user); %>
-   
+      
+   	<a href="#" class="btn btn-dark btn-sm">Subscribe</a>	
 	<a href="<%= userService.createLogoutURL(request.getRequestURI()) %>" class="btn btn-dark btn-sm">
 		Sign Out
 	</a> 
-	<hr>
 	<a href="/post.jsp" class="btn btn-dark btn-sm">Create Post</a>
 	<br><br>
 <%	} else { %>
 
-	<a href="<%= userService.createLoginURL(request.getRequestURI()) %>" class="btn btn-dark btn-small">	
+	<a href="<%= userService.createLoginURL(request.getRequestURI()) %>" class="btn btn-dark btn-sm">	
 		Sign In
-	</a> 
-	<hr>
+	</a> <br><br>
 
 <% 	}
 
@@ -62,12 +62,18 @@
 		pageContext.setAttribute("post_title", post.getProperty("title"));
 		pageContext.setAttribute("post_content", post.getProperty("content"));
     	pageContext.setAttribute("post_user", post.getProperty("user"));
-    	pageContext.setAttribute("post_date", post.getProperty("date")); %>
+    	
+    	Date date = (Date)post.getProperty("date");
+      	SimpleDateFormat ft = new SimpleDateFormat ("MMM dd, YYYY");
+      	pageContext.setAttribute("post_date", ft.format(date));
+      	
+      	%>
+      	
+      	
 
         <h3>${fn:escapeXml(post_title)}</h3>
-        <p class="subtext">${fn:escapeXml(post_user.nickname)}, ${fn:escapeXml(post_date)}</p>
-   		<blockquote>${fn:escapeXml(post_content)}</blockquote>
-   		<br>
+        <p class="subtext">${fn:escapeXml(post_user.nickname)} | ${fn:escapeXml(post_date)}</p>
+   		<blockquote>${fn:escapeXml(post_content)}</blockquote><hr>
 <% 	}   %>
 
 </body>
