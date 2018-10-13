@@ -7,8 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.util.Date;
-import java.util.logging.Logger;
-
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -27,8 +25,8 @@ public class BloggyPostServlet extends HttpServlet {
 		UserService userService = UserServiceFactory.getUserService();
 	    User user = userService.getCurrentUser();
 
-	    String title = req.getParameter("title");
-        Key postKey = KeyFactory.createKey("Blog", title);
+	    String blogName = req.getParameter("blogName");
+        Key postKey = KeyFactory.createKey("Blog", blogName);
         String content = req.getParameter("content");
         Date date = new Date();
         Entity post = new Entity("Post", postKey);
@@ -40,6 +38,6 @@ public class BloggyPostServlet extends HttpServlet {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         datastore.put(post);
 
-        resp.sendRedirect("/bloggy.jsp?title=" + title);
+        resp.sendRedirect("/bloggy.jsp?blogName=" + blogName);
 	}
 }

@@ -25,65 +25,57 @@
 		
 	<button type="button">Subscribe</button>	
 <%	
-	String title = request.getParameter("title");
-	if (title == null) {
-    	title = "default";
+	String blogName = request.getParameter("blogName");
+	if (blogName == null) {
+    	blogName = "default";
 	}
-	pageContext.setAttribute("title", title);
+	pageContext.setAttribute("blogName", blogName);
 	
 	UserService userService = UserServiceFactory.getUserService();
     User user = userService.getCurrentUser();
     if (user != null) {
       pageContext.setAttribute("user", user);
 %>
-<a href="<%= userService.createLogoutURL(request.getRequestURI()) %>">
-	<button type="button">Sign In</button>
-</a>
+	<a href="<%= userService.createLogoutURL(request.getRequestURI()) %>">
+		<button type="button">Sign Out</button>
+	</a> 
+	<hr>
+	<a href="/post.jsp"><button type="button">Create Post</button></a>
 <%
     } else {
 %>
-<a href="<%= userService.createLoginURL(request.getRequestURI()) %>">	
-	<button type="button">Sign In</button>
-</a>
+	<a href="<%= userService.createLoginURL(request.getRequestURI()) %>">	
+		<button type="button">Sign In</button>
+	</a> 
 	<hr>
-<!-- 	<button type="button">Create Post</button>
- -->	
-
- <form action="/post" method="post">
-   <div><textarea name="content" rows="3" cols="60"></textarea></div>
-   <div><input type="submit" value="Post" ></div>
-   <input type="hidden" name="title" value="${fn:escapeXml(title)}"/>
- </form>	
 <% 
     }
-    
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    Key postKey = KeyFactory.createKey("Blog", title);
 
-    Query query = new Query("Post", postKey).addSort("date", Query.SortDirection.DESCENDING);
-    List<Entity> posts = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(5));
+DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+Key postKey = KeyFactory.createKey("Blog", blogName);
 
-    for (Entity post : posts) {
-    	pageContext.setAttribute("post_content", post.getProperty("content"));
+Query query = new Query("Post", postKey).addSort("date", Query.SortDirection.DESCENDING);
+List<Entity> posts = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(5));
 
-    	if (post.getProperty("user") == null) {
+for (Entity post : posts) {
+	pageContext.setAttribute("post_content", post.getProperty("content"));
+
+	if (post.getProperty("user") == null) {
+    %>
+    	<p>An anonymous person wrote:</p>
+   	<%
+    } else {
+
+    	pageContext.setAttribute("post_user", post.getProperty("user"));
         %>
-        	<p>An anonymous person wrote:</p>
-       	<%
-        } else {
-
-        	pageContext.setAttribute("post_user", post.getProperty("user"));
-            %>
-            <p><b>${fn:escapeXml(greeting_user.nickname)}</b> wrote:</p>
-         	<%
-        }
-        %>
-        <blockquote>${fn:escapeXml(post_content)}</blockquote>
-		<%
-	}
-%>	
-	
-	
+        <p><b>${fn:escapeXml(post_user.nickname)}</b> wrote:</p>
+     	<%
+    }
+    %>
+    <blockquote>${fn:escapeXml(post_content)}</blockquote>
+	<%
+}
+%>
 </body>
 
 </html>
